@@ -1,64 +1,71 @@
 require_relative 'piece'
 
 class Board
-  attr_accessor :grid
+  attr_accessor :grid, :null
 
   def initialize
 
     @null = NullPiece.new
-    @grid = Array.new(8) {Array.new(8) {[Piece.new, @null].sample}}
+    @grid = Array.new(8) {Array.new(8) {nil}}
+    # @grid[0][0] = Piece.new
+    set_up
+  end
 
+  def set_up
+    (0..1).each do |row|
+      (0..7).each do |col|
+        @grid[row][col] = Piece.new
+      end
+    end
+    (6..7).each do |row|
+      (0..7).each do |col|
+        @grid[row][col] = Piece.new
+      end
+    end
   end
 
   def move_piece(start_pos, end_pos)
     begin
       check_start_pos(start_pos)
-
-    rescue NoPieceError => noperr
-      noperr.message
-      puts "enter a new start postion"
-      start_pos = gets.chomp.split(",").map{|n| n.to_i}
-      retry
-
       check_end_pos(end_pos)
-
-    rescue InvalidMoveError => inv
-      inv.message
-      puts "enter a new end position"
+    rescue
+      puts "invalid, please put a new start and end position"
+      start_pos = gets.chomp.split(",").map{|n| n.to_i}
       end_pos = gets.chomp.split(",").map{|n| n.to_i}
       retry
-
-    place_piece(start_pos, end_pos)
+    ensure
+      place_piece(start_pos, end_pos)
     end
+  end
 
-    puts "hello"
+  def [](pos)
+    row = pos.first
+    col = pos.last
+    @grid[row][col]
+  end
 
+  def []=(pos, piece)
+    row = pos.first
+    col = pos.last
+    @grid[row][col] = piece
   end
 
   def check_start_pos(pos)
-    if @grid[pos.first][pos.last].is_a?(NullPiece)
+    if self[pos].class == NullPiece
       raise NoPieceError.new
     end
   end
 
   def check_end_pos(pos)
-    if @grid[pos.first][pos.last].is_a?(Piece)
+    if self[pos].class == Piece
       raise InvalidMoveError.new
     end
   end
 
   def place_piece(start_pos, end_pos)
-
-    piece = @grid[start_pos.first][start_pos.last]
-    @grid[end_pos.first][end_pos.last] = piece
-    @grid[end_pos.first][end_pos.last] = @null
-
-
-
+    self[end_pos] = self[start_pos]
+    self[start_pos] = @null
   end
-
-
-
 end
 
 
