@@ -1,12 +1,13 @@
 require_relative 'piece'
-
+require_relative 'display'
+require_relative 'cursor'
 class Board
   attr_accessor :grid, :null
 
   def initialize
 
     @null = NullPiece.new
-    @grid = Array.new(8) {Array.new(8) {nil}}
+    @grid = Array.new(8) {Array.new(8) {@null}}
     # @grid[0][0] = Piece.new
     set_up
   end
@@ -66,6 +67,11 @@ class Board
     self[end_pos] = self[start_pos]
     self[start_pos] = @null
   end
+
+  def inspect
+    " "
+  end
+
 end
 
 
